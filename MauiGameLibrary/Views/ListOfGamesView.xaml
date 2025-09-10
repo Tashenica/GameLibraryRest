@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiGameLibrary.Views.ListOfGamesView"
+             xmlns:viewmodels="clr-namespace:MauiGameLibrary.ViewModels"
+             xmlns:views="clr-namespace:MauiGameLibrary.Views"
+             xmlns:models="clr-namespace:MauiGameLibrary.Models"
+             Title="Game Library" x:DataType="viewmodels:ListOfGamesViewModel">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add Game" Command="{Binding AddGameCommand}">
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+
+ <!--   <Shell.TitleView>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Source="dotnet_bot.png" HeightRequest="60" WidthRequest="60" />
+            <Label Grid.ColumnSpan="2" Grid.Column="1" FontAttributes="Bold" FontSize="Medium" Text="Game Library" HorizontalOptions="Center" VerticalOptions="Center"/>
+        </Grid>
+    </Shell.TitleView> -->
+
+    <ContentPage.Resources>
+        <Style TargetType="Border">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor"
+                                        Value="LightSkyBlue" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
+    <CollectionView ItemsSource="{Binding Games}" SelectionMode="Single" SelectedItem="{Binding SelectedGame}" SelectionChangedCommand="{Binding GameSelectedCommand}">
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="models:GameInformation">
+
+                <Border Margin="5" Padding="5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+               
+                <Grid Padding="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                 
+                    <Image Grid.RowSpan="2" Source="{Binding Image}" Aspect="AspectFill" HeightRequest="80" WidthRequest="80" />
+                    <Label Grid.ColumnSpan="2" FontAttributes="Bold" Margin="5" Text="{Binding Title}" Grid.Column="1"/>
+                    <Label FontAttributes="Italic" TextColor="Gray" Margin="5" Text="{Binding GameType}" Grid.Column="1" Grid.Row="1"/>
+                    <Label FontAttributes="Bold" TextColor="Red" HorizontalOptions="End" Grid.Column="2" Grid.Row="1" Margin="5" Text="{Binding AgeRestriction}"/>
+                    
+
+                </Grid>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</views:BasePage>

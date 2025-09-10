@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MauiGameLibrary.ViewModels"
+             xmlns:views="clr-namespace:MauiGameLibrary.Views"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="MauiGameLibrary.Views.UpdateGameView"
+             Title="{Binding SelectedGame.Title}" x:DataType="viewmodels:UpdateGameViewModel">
+    
+    <ContentPage.Resources>
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="LightPink" />
+        </Style>
+        <Style x:Key="ValidEntryStyle" TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="White" />
+        </Style>
+        <Style x:Key="InvalidEditorStyle" TargetType="Editor">
+            <Setter Property="BackgroundColor" Value="LightPink" />
+        </Style>
+        <Style x:Key="ValidEditorStyle" TargetType="Editor">
+            <Setter Property="BackgroundColor" Value="White" />
+        </Style>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <Grid Padding="10" RowSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Image Display with tap indicator -->
+            <Border Grid.Row="0" Grid.ColumnSpan="2" 
+                    Stroke="DodgerBlue" 
+                    StrokeThickness="2" 
+                    StrokeDashArray="5,5" 
+                    HeightRequest="250" 
+                    BackgroundColor="LightGray">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                <Grid>
+                    <Image Aspect="AspectFit" 
+                           Source="{Binding SelectedGame.Image}"
+                           BackgroundColor="White"
+                           HorizontalOptions="FillAndExpand"
+                           VerticalOptions="FillAndExpand">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectImageCommand}" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <Frame BackgroundColor="Black" 
+                           Opacity="0.8" 
+                           CornerRadius="15"
+                           Padding="8,4"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="End" 
+                           Margin="10"
+                           HasShadow="True">
+                        <Label Text="📷 Tap to change image" 
+                               TextColor="White" 
+                               FontSize="12" 
+                               FontAttributes="Bold"/>
+                    </Frame>
+                </Grid>
+            </Border>
+
+            <!-- Title -->
+            <Label Grid.Row="2" Grid.Column="0" Text="Title:*" VerticalOptions="Center"/>
+            <Entry Grid.Row="2" Grid.Column="1" Text="{Binding SelectedGame.Title}" Placeholder="Enter game title">
+                <Entry.Behaviors>
+                    <toolkit:CharactersValidationBehavior 
+                    InvalidStyle="{StaticResource InvalidEntryStyle}"
+                    ValidStyle="{StaticResource ValidEntryStyle}"
+                    Flags="ValidateOnValueChanged"
+                    MinimumLength="1"
+                    CharacterType="Any"/>
+                </Entry.Behaviors>
+            </Entry>
+
+            <!-- Game Type -->
+            <Label Grid.Row="3" Grid.Column="0" Text="Game Type:*" VerticalOptions="Center"/>
+            <Picker Grid.Row="3" Grid.Column="1" SelectedItem="{Binding SelectedGameType}" ItemsSource="{Binding GameTypes}" ItemDisplayBinding="{Binding Name}"/>
+
+            <!-- Company Name -->
+            <Label Grid.Row="4" Grid.Column="0" Text="Company:*" VerticalOptions="Center"/>
+            <Entry Grid.Row="4" Grid.Column="1" Text="{Binding SelectedGame.CompanyName}" Placeholder="Enter company name">
+                <Entry.Behaviors>
+                    <toolkit:CharactersValidationBehavior 
+                    InvalidStyle="{StaticResource InvalidEntryStyle}"
+                    ValidStyle="{StaticResource ValidEntryStyle}"
+                    Flags="ValidateOnValueChanged"
+                    MinimumLength="1"
+                    CharacterType="Any"/>
+                </Entry.Behaviors>
+            </Entry>
+
+            <!-- Genre -->
+            <Label Grid.Row="5" Grid.Column="0" Text="Genre:*" VerticalOptions="Center"/>
+            <Picker Grid.Row="5" Grid.Column="1" SelectedItem="{Binding SelectedGenre}" ItemsSource="{Binding Genres}" ItemDisplayBinding="{Binding Name}"/>
+
+            <!-- Age Restriction -->
+            <Label Grid.Row="6" Grid.Column="0" Text="Age Restriction:*" VerticalOptions="Center"/>
+            <Picker Grid.Row="6" Grid.Column="1" SelectedItem="{Binding SelectedAgeRestriction}" ItemsSource="{Binding AgeRestrictions}" ItemDisplayBinding="{Binding Code}"/>
+
+            <!-- Multiplayer -->
+            <Label Grid.Row="7" Grid.Column="0" Text="Multiplayer:" VerticalOptions="Center"/>
+            <Switch Grid.Row="7" Grid.Column="1" IsToggled="{Binding SelectedGame.Multiplayer}" HorizontalOptions="Start"/>
+
+            <!-- Year Published -->
+            <Label Grid.Row="8" Grid.Column="0" Text="Year Published:" VerticalOptions="Center"/>
+            <DatePicker Grid.Row="8" Grid.Column="1" Date="{Binding SelectedGame.YearPublished}" Format="yyyy"/>
+
+            <!-- Description -->
+            <Label Grid.Row="9" Grid.Column="0" Text="Description:*" VerticalOptions="Start"/>
+            <Editor Grid.Row="9" Grid.Column="1" HeightRequest="100" Text="{Binding SelectedGame.Description}" Placeholder="Enter game description">
+                <Editor.Behaviors>
+                    <toolkit:CharactersValidationBehavior 
+                    InvalidStyle="{StaticResource InvalidEditorStyle}"
+                    ValidStyle="{StaticResource ValidEditorStyle}"
+                    Flags="ValidateOnValueChanged"
+                    MinimumLength="1"
+                    CharacterType="Any"/>
+                </Editor.Behaviors>
+            </Editor>
+
+            <!-- Save Button -->
+            <Button Grid.Row="10" Grid.ColumnSpan="2" Text="Save Changes" BackgroundColor="DodgerBlue" TextColor="White" Margin="0,10,0,0" Command="{Binding SaveChangesCommand}"/>
+        </Grid>
+    </ScrollView>
+
+</views:BasePage>
