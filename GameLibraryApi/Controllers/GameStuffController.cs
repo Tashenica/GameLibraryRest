@@ -31,11 +31,56 @@ namespace GameLibraryApi.Controllers
 
                 return Ok(games);
             }
-            catch(Exception ex)
+            catch(Exception _)
             {
                 return BadRequest();
             }
 
+        }
+
+        // GET: api/<GameStuffController>/gametypes
+        [HttpGet("gametypes")]
+        public IActionResult GetGameTypes()
+        {
+            try
+            {
+                List<GameType> gameTypes = _gameService.GetGameTypes();
+                return Ok(gameTypes);
+            }
+            catch (Exception _)
+            {
+                return BadRequest();
+            }
+        }
+
+        // GET: api/<GameStuffController>/genres
+        [HttpGet("genres")]
+        public IActionResult GetGenres()
+        {
+            try
+            {
+                List<Genre> genres = _gameService.GetGenres();
+                return Ok(genres);
+            }
+            catch (Exception _)
+            {
+                return BadRequest();
+            }
+        }
+
+        // GET: api/<GameStuffController>/agerestrictions
+        [HttpGet("agerestrictions")]
+        public IActionResult GetAgeRestrictions()
+        {
+            try
+            {
+                List<AgeRestriction> ageRestrictions = _gameService.GetAgeRestrictions();
+                return Ok(ageRestrictions);
+            }
+            catch (Exception _)
+            {
+                return BadRequest();
+            }
         }
 
         // GET api/<GameStuffController>/5
@@ -51,7 +96,7 @@ namespace GameLibraryApi.Controllers
 
                 return Ok(game);
             }
-            catch(Exception ex)
+            catch(Exception _)
             {
                 return BadRequest();
             }
@@ -82,7 +127,7 @@ namespace GameLibraryApi.Controllers
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception _)
             {
                 return BadRequest();
 
@@ -112,7 +157,7 @@ namespace GameLibraryApi.Controllers
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception _)
             {
                 return BadRequest();
 
@@ -139,7 +184,7 @@ namespace GameLibraryApi.Controllers
                     return Ok();
                 }
             }
-            catch (Exception ex)
+            catch (Exception _)
             {
                 return BadRequest();
 

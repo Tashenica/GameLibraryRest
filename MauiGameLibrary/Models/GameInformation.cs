@@ -8,24 +8,35 @@ namespace MauiGameLibrary.Models
 {
     public class GameInformation
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public string GameType { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        
+        // Foreign key for GameType
+        public int GameTypeId { get; set; }
+        
+        // Navigation property
+        public virtual GameType? GameType { get; set; }
 
-        public string CompanyName { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
 
-        public string Genre { get; set; }
+        // Foreign key for Genre
+        public int GenreId { get; set; }
+        
+        // Navigation property
+        public virtual Genre? Genre { get; set; }
 
-        public string AgeRestriction { get; set; }
+        // Foreign key for AgeRestriction
+        public int AgeRestrictionId { get; set; }
+        
+        // Navigation property
+        public virtual AgeRestriction? AgeRestriction { get; set; }
 
         public bool Multiplayer { get; set; }
 
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        public string Image { get; set; }
+        public string Image { get; set; } = string.Empty;
 
         public DateTime YearPublished { get; set; }
-
-    
     }
 }

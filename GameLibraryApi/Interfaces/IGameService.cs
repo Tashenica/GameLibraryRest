@@ -9,5 +9,8 @@ namespace GameLibraryApi.Interfaces
         GameInformation EditGame(GameInformation gameInformation);
         List<GameInformation> GetAllGames();
         GameInformation GetGame(int id);
+        List<GameType> GetGameTypes();
+        List<Genre> GetGenres();
+        List<AgeRestriction> GetAgeRestrictions();
     }
 }

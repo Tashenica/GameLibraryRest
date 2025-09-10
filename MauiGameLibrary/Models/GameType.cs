@@ -8,7 +8,11 @@ namespace MauiGameLibrary.Models
 {
     public class GameType
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        
+        // Navigation property
+        public virtual ICollection<GameInformation>? GameInformations { get; set; }
     }
 }

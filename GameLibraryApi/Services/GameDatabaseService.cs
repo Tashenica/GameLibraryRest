@@ -1,6 +1,7 @@
 ﻿using GameLibraryApi.Data;
 using GameLibraryApi.Interfaces;
 using GameLibraryApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameLibraryApi.Services
 {
@@ -29,33 +30,50 @@ namespace GameLibraryApi.Services
 
         public GameInformation EditGame(GameInformation gameInformation)
         {
-            GameInformation gameInfo = GetGame(gameInformation.Id);
+            GameInformation? gameInfo = GetGame(gameInformation.Id);
             if (gameInfo != null)
             {
                 gameInfo.Title = gameInformation.Title;
-                gameInfo.GameType = gameInformation.GameType;
+                gameInfo.GameTypeId = gameInformation.GameTypeId;
+                gameInfo.GenreId = gameInformation.GenreId;
                 gameInfo.CompanyName = gameInformation.CompanyName;
-                gameInfo.Genre = gameInformation.Genre;
-                gameInfo.AgeRestriction = gameInformation.AgeRestriction;
+                gameInfo.AgeRestrictionId = gameInformation.AgeRestrictionId;
                 gameInfo.Multiplayer = gameInformation.Multiplayer;
                 gameInfo.Description = gameInformation.Description;
                 gameInfo.Image = gameInformation.Image;
                 gameInfo.YearPublished = gameInformation.YearPublished;
 
                 _context.SaveChanges();
+                return gameInfo;
             }
 
-            return gameInfo;
+            throw new InvalidOperationException($"Game with ID {gameInformation.Id} not found.");
         }
 
         public List<GameInformation> GetAllGames()
         {
-           return _context.GameInformations.ToList();
+           return _context.GameInformations.Include(g => g.GameType).Include(g => g.Genre).Include(g => g.AgeRestriction).ToList();
+        }
+
+        public List<GameType> GetGameTypes()
+        {
+            return _context.GameTypes.OrderBy(gt => gt.Name).ToList();
+        }
+
+        public List<Genre> GetGenres()
+        {
+            return _context.Genres.OrderBy(g => g.Name).ToList();
+        }
+
+        public List<AgeRestriction> GetAgeRestrictions()
+        {
+            return _context.AgeRestrictions.OrderBy(ar => ar.Code).ToList();
         }
 
         public GameInformation GetGame(int id)
         {
-           return _context.GameInformations.Where(x => x.Id == id).FirstOrDefault();
+           GameInformation? game = _context.GameInformations.Include(g => g.GameType).Include(g => g.Genre).Include(g => g.AgeRestriction).Where(x => x.Id == id).FirstOrDefault();
+           return game ?? throw new InvalidOperationException($"Game with ID {id} not found.");
         }
     }
 }

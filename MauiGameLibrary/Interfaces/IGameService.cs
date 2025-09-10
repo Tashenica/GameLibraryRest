@@ -9,13 +9,13 @@ namespace MauiGameLibrary.Interfaces
 {
     public interface IGameService
     {
-        List<AgeRestriction> GetAgeRestrictions();
+        Task<List<AgeRestriction>> GetAgeRestrictions();
         Task<List<GameInformation>> GetAllGameInformation();
-        GameInformation GetGameInformationById(string id);
-        List<GameType> GetGameTypes();
-        List<Genre> GetGenres();
+        Task<GameInformation> GetGameInformationById(int id);
+        Task<List<GameType>> GetGameTypes();
+        Task<List<Genre>> GetGenres();
        /* void LoadData();
         void SaveData();*/
-        void UpdateGameInformation(GameInformation gameInformation);
+        Task UpdateGameInformation(GameInformation gameInformation);
     }
 }

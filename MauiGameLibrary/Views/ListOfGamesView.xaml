@@ -66,8 +66,8 @@
                  
                     <Image Grid.RowSpan="2" Source="{Binding Image}" Aspect="AspectFill" HeightRequest="80" WidthRequest="80" />
                     <Label Grid.ColumnSpan="2" FontAttributes="Bold" Margin="5" Text="{Binding Title}" Grid.Column="1"/>
-                    <Label FontAttributes="Italic" TextColor="Gray" Margin="5" Text="{Binding GameType}" Grid.Column="1" Grid.Row="1"/>
-                    <Label FontAttributes="Bold" TextColor="Red" HorizontalOptions="End" Grid.Column="2" Grid.Row="1" Margin="5" Text="{Binding AgeRestriction}"/>
+                    <Label FontAttributes="Italic" TextColor="Gray" Margin="5" Text="{Binding GameType.Name}" Grid.Column="1" Grid.Row="1"/>
+                    <Label FontAttributes="Bold" TextColor="Red" HorizontalOptions="End" Grid.Column="2" Grid.Row="1" Margin="5" Text="{Binding AgeRestriction.Code}"/>
                     
 
                 </Grid>

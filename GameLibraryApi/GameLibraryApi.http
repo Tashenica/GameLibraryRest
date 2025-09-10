@@ -4,3 +4,70 @@ GET {{GameLibraryApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+# Test all game information endpoints
+GET {{GameLibraryApi_HostAddress}}/api/gamestuff
+Accept: application/json
+
+###
+
+# Test game types endpoint
+GET {{GameLibraryApi_HostAddress}}/api/gamestuff/gametypes
+Accept: application/json
+
+###
+
+# Test genres endpoint
+GET {{GameLibraryApi_HostAddress}}/api/gamestuff/genres
+Accept: application/json
+
+###
+
+# Test age restrictions endpoint
+GET {{GameLibraryApi_HostAddress}}/api/gamestuff/agerestrictions
+Accept: application/json
+
+###
+
+# Test specific game by ID
+GET {{GameLibraryApi_HostAddress}}/api/gamestuff/1
+Accept: application/json
+
+###
+
+# Test creating a new game
+POST {{GameLibraryApi_HostAddress}}/api/gamestuff
+Content-Type: application/json
+
+{
+  "title": "Test Game",
+  "companyName": "Test Company",
+  "gameTypeId": 1,
+  "genreId": 1,
+  "ageRestrictionId": 2,
+  "multiplayer": true,
+  "description": "A test game",
+  "image": "test.png",
+  "yearPublished": "2024-01-01T00:00:00"
+}
+
+###
+
+# Test updating an existing game (assuming ID 1 exists)
+PUT {{GameLibraryApi_HostAddress}}/api/gamestuff/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "Updated Game Title",
+  "companyName": "Updated Company",
+  "gameTypeId": 1,
+  "genreId": 2,
+  "ageRestrictionId": 3,
+  "multiplayer": false,
+  "description": "An updated test game",
+  "image": "updated.png",
+  "yearPublished": "2024-06-01T00:00:00"
+}
+
+###

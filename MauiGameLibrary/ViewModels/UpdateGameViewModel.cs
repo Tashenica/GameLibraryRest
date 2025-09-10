@@ -50,7 +50,8 @@ namespace MauiGameLibrary.ViewModels
                 
                 if (_selectedGameType != null && SelectedGame != null)
                 {
-                    SelectedGame.GameType = _selectedGameType.Name;
+                    SelectedGame.GameTypeId = _selectedGameType.Id;
+                    SelectedGame.GameType = _selectedGameType;
                     OnPropertyChanged(nameof(SelectedGame));
                 }
             }
@@ -80,7 +81,8 @@ namespace MauiGameLibrary.ViewModels
                 
                 if (_selectedAgeRestriction != null && SelectedGame != null)
                 {
-                    SelectedGame.AgeRestriction = _selectedAgeRestriction.Code;
+                    SelectedGame.AgeRestriction = _selectedAgeRestriction;
+                    SelectedGame.AgeRestrictionId = _selectedAgeRestriction.Id;
                     OnPropertyChanged(nameof(SelectedGame));
                 }
             }
@@ -110,7 +112,8 @@ namespace MauiGameLibrary.ViewModels
                 
                 if (_selectedGenre != null && SelectedGame != null)
                 {
-                    SelectedGame.Genre = _selectedGenre.Name;
+                    SelectedGame.GenreId = _selectedGenre.Id;
+                    SelectedGame.Genre = _selectedGenre;
                     OnPropertyChanged(nameof(SelectedGame));
                 }
             }
@@ -133,7 +136,7 @@ namespace MauiGameLibrary.ViewModels
             {
                 if (SelectedGame != null && IsValidGame())
                 {
-                    _gameDataServices.UpdateGameInformation(SelectedGame);
+                    await _gameDataServices.UpdateGameInformation(SelectedGame);
                     
                     // Navigate back to the previous page
                     await Shell.Current.GoToAsync("..");
@@ -222,18 +225,24 @@ namespace MauiGameLibrary.ViewModels
             }
         }
 
-        public override void OnAppearing()
+        public override async void OnAppearing()
         {
             base.OnAppearing();
-            GameTypes = _gameDataServices.GetGameTypes();
-            AgeRestrictions = _gameDataServices.GetAgeRestrictions();
-            Genres = _gameDataServices.GetGenres();
+            GameTypes = await _gameDataServices.GetGameTypes();
+            AgeRestrictions = await _gameDataServices.GetAgeRestrictions();
+            Genres = await _gameDataServices.GetGenres();
 
-            if (string.IsNullOrEmpty(SelectedGame.Id))
+            if (SelectedGame.Id == 0)
             {
-                SelectedGame.GameType = GameTypes.First().Name;
-                SelectedGame.AgeRestriction = AgeRestrictions.First().Code;
-                SelectedGame.Genre = Genres.First().Name;
+                var firstGameType = GameTypes.First();
+                var firstGenre = Genres.First();
+                var firstAgeRestriction = AgeRestrictions.First();
+                SelectedGame.GameTypeId = firstGameType.Id;
+                SelectedGame.GameType = firstGameType;
+                SelectedGame.AgeRestriction = firstAgeRestriction;
+                SelectedGame.AgeRestrictionId = firstAgeRestriction.Id;
+                SelectedGame.GenreId = firstGenre.Id;
+                SelectedGame.Genre = firstGenre;
             }
 
             UpdateSelectedGameType();
@@ -243,25 +252,25 @@ namespace MauiGameLibrary.ViewModels
 
         private void UpdateSelectedGameType()
         {
-            if (SelectedGame != null && GameTypes != null && !string.IsNullOrEmpty(SelectedGame.GameType))
+            if (SelectedGame != null && GameTypes != null && SelectedGame.GameTypeId > 0)
             {
-                SelectedGameType = GameTypes.FirstOrDefault(gt => gt.Name == SelectedGame.GameType);
+                SelectedGameType = GameTypes.FirstOrDefault(gt => gt.Id == SelectedGame.GameTypeId);
             }
         }
 
         private void UpdateSelectedAgeRestriction()
         {
-            if (SelectedGame != null && AgeRestrictions != null && !string.IsNullOrEmpty(SelectedGame.AgeRestriction))
+            if (SelectedGame != null && AgeRestrictions != null && SelectedGame.AgeRestriction != null)
             {
-                SelectedAgeRestriction = AgeRestrictions.FirstOrDefault(ar => ar.Code == SelectedGame.AgeRestriction);
+                SelectedAgeRestriction = AgeRestrictions.FirstOrDefault(ar => ar.Id == SelectedGame.AgeRestriction.Id);
             }
         }
 
         private void UpdateSelectedGenre()
         {
-            if (SelectedGame != null && Genres != null && !string.IsNullOrEmpty(SelectedGame.Genre))
+            if (SelectedGame != null && Genres != null && SelectedGame.GenreId > 0)
             {
-                SelectedGenre = Genres.FirstOrDefault(g => g.Name == SelectedGame.Genre);
+                SelectedGenre = Genres.FirstOrDefault(g => g.Id == SelectedGame.GenreId);
             }
         }
     }

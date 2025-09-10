@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json;
 using MauiGameLibrary.Interfaces;
+using System.Text.Json;
+using System.IO;
 
 namespace MauiGameLibrary.Services
 {
@@ -19,9 +20,9 @@ namespace MauiGameLibrary.Services
 
         public GameDataService()
         {
-            CreateFakeGameInformation();
             LoadData();
             PrePopulateData();
+            CreateFakeGameInformation();
         }
 
         public void PrePopulateData()
@@ -34,89 +35,97 @@ namespace MauiGameLibrary.Services
 
         public void PrePopulateGameTypes()
         {
-            GameType gameType = new GameType() { Name = "Nintendo 64", Description = "Nintendo's 64 bit console" };
+            GameType gameType = new GameType() { Id = 1, Name = "Nintendo 64", Description = "Nintendo's 64 bit console" };
             _gameTypes.Add(gameType);
 
-            gameType = new GameType() { Name = "Nintendo Wii", Description = "Nintendo's family motion console." };
+            gameType = new GameType() { Id = 2, Name = "Nintendo Wii", Description = "Nintendo's family motion console." };
             _gameTypes.Add(gameType);
 
-            gameType = new GameType() { Name = "Nintendo Switch", Description = "Nintendo's handheld console." };
+            gameType = new GameType() { Id = 3, Name = "Nintendo Switch", Description = "Nintendo's handheld console." };
             _gameTypes.Add(gameType);
 
-            gameType = new GameType() { Name = "Playstation 5", Description = "Sony's latest console." };
+            gameType = new GameType() { Id = 4, Name = "Playstation 5", Description = "Sony's latest console." };
             _gameTypes.Add(gameType);
         }
 
         public void PrePopulateAgeRestrictions()
         {
-            AgeRestriction ageRestriction = new AgeRestriction() { Code = "E", Description = "Everyone - Content suitable for all ages" };
+            AgeRestriction ageRestriction = new AgeRestriction() { Id = 1, Code = "E", Description = "Everyone - Content suitable for all ages" };
             _ageRestrictions.Add(ageRestriction);
 
-            ageRestriction = new AgeRestriction() { Code = "E10+", Description = "Everyone 10+ - Content suitable for ages 10 and older" };
+            ageRestriction = new AgeRestriction() { Id = 2, Code = "E10+", Description = "Everyone 10+ - Content suitable for ages 10 and older" };
             _ageRestrictions.Add(ageRestriction);
 
-            ageRestriction = new AgeRestriction() { Code = "T", Description = "Teen - Content suitable for ages 13 and older" };
+            ageRestriction = new AgeRestriction() { Id = 3, Code = "T", Description = "Teen - Content suitable for ages 13 and older" };
             _ageRestrictions.Add(ageRestriction);
 
-            ageRestriction = new AgeRestriction() { Code = "M", Description = "Mature 17+ - Content suitable for ages 17 and older" };
+            ageRestriction = new AgeRestriction() { Id = 4, Code = "M", Description = "Mature 17+ - Content suitable for ages 17 and older" };
             _ageRestrictions.Add(ageRestriction);
 
-            ageRestriction = new AgeRestriction() { Code = "AO", Description = "Adults Only 18+ - Content suitable only for adults" };
+            ageRestriction = new AgeRestriction() { Id = 5, Code = "AO", Description = "Adults Only 18+ - Content suitable only for adults" };
             _ageRestrictions.Add(ageRestriction);
 
-            ageRestriction = new AgeRestriction() { Code = "RP", Description = "Rating Pending - Not yet assigned a final rating" };
+            ageRestriction = new AgeRestriction() { Id = 6, Code = "RP", Description = "Rating Pending - Not yet assigned a final rating" };
             _ageRestrictions.Add(ageRestriction);
         }
 
         public void PrePopulateGenres()
         {
-            Genre genre = new Genre() { Name = "Action", Description = "Fast-paced games with emphasis on physical challenges" };
+            Genre genre = new Genre() { Id = 1, Name = "Action", Description = "Fast-paced games with emphasis on physical challenges" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Adventure", Description = "Story-driven games with exploration and puzzle-solving" };
+            genre = new Genre() { Id = 2, Name = "Adventure", Description = "Story-driven games with exploration and puzzle-solving" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "RPG", Description = "Role-playing games with character development and story" };
+            genre = new Genre() { Id = 3, Name = "RPG", Description = "Role-playing games with character development and story" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Strategy", Description = "Games requiring tactical thinking and planning" };
+            genre = new Genre() { Id = 4, Name = "Strategy", Description = "Games requiring tactical thinking and planning" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Sports", Description = "Games simulating real-world sports activities" };
+            genre = new Genre() { Id = 5, Name = "Sports", Description = "Games simulating real-world sports activities" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Racing", Description = "Vehicle racing and driving simulation games" };
+            genre = new Genre() { Id = 6, Name = "Racing", Description = "Vehicle racing and driving simulation games" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Puzzle", Description = "Games focused on logic problems and brain teasers" };
+            genre = new Genre() { Id = 7, Name = "Puzzle", Description = "Games focused on logic problems and brain teasers" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Platformer", Description = "Games involving jumping between platforms and obstacles" };
+            genre = new Genre() { Id = 8, Name = "Platformer", Description = "Games involving jumping between platforms and obstacles" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Fighting", Description = "Combat-focused games with hand-to-hand or weapon combat" };
+            genre = new Genre() { Id = 9, Name = "Fighting", Description = "Combat-focused games with hand-to-hand or weapon combat" };
             _genres.Add(genre);
 
-            genre = new Genre() { Name = "Simulation", Description = "Games that simulate real-world activities or systems" };
+            genre = new Genre() { Id = 10, Name = "Simulation", Description = "Games that simulate real-world activities or systems" };
             _genres.Add(genre);
         }
 
-        public List<GameInformation> GetAllGameInformation()
+        public Task<List<GameInformation>> GetAllGameInformation()
         {
             // if we wanted to not keep referenced objects automatically updated return _gameInformation.Select(gameInfo => (GameInformation)gameInfo.Clone()).ToList();
-            return _gameInformation;
+            return Task.FromResult(_gameInformation);
         }
 
         public void CreateFakeGameInformation()
         {
+            // Wait for prepopulated data to be ready
+            var wiiGameType = _gameTypes.FirstOrDefault(gt => gt.Name == "Nintendo Wii");
+            var switchGameType = _gameTypes.FirstOrDefault(gt => gt.Name == "Nintendo Switch");
+            var adventureGenre = _genres.FirstOrDefault(g => g.Name == "Adventure");
+            var platformerGenre = _genres.FirstOrDefault(g => g.Name == "Platformer");
+            var e10PlusRating = _ageRestrictions.FirstOrDefault(ar => ar.Code == "E10+");
+            var everyoneRating = _ageRestrictions.FirstOrDefault(ar => ar.Code == "E");
+
             _gameInformation.Add(new GameInformation
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = 1,
                 Title = "The Legend of Zelda: Breath of the Wild",
-                GameType = "Nintendo Wii",
+                GameType = wiiGameType,
                 CompanyName = "Nintendo",
-                Genre = "Adventure",
-                AgeRestriction = "E10+",
+                Genre = adventureGenre,
+                AgeRestriction = e10PlusRating,
                 Multiplayer = false,
                 Description = "An open-world action-adventure game set in the kingdom of Hyrule.",
                 Image = "zelda.png",
@@ -124,12 +133,12 @@ namespace MauiGameLibrary.Services
             });
             _gameInformation.Add(new GameInformation
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = 2,
                 Title = "Super Mario Odyssey",
-                GameType = "Nintendo Switch",
+                GameType = switchGameType,
                 CompanyName = "Nintendo",
-                Genre = "Platformer",
-                AgeRestriction = "E",
+                Genre = platformerGenre,
+                AgeRestriction = everyoneRating,
                 Multiplayer = false,
                 Description = "A 3D platformer where Mario travels across various kingdoms to rescue Princess Peach.",
                 Image = "mario.png",
@@ -137,12 +146,12 @@ namespace MauiGameLibrary.Services
             });
         }
 
-        public void UpdateGameInformation(GameInformation gameInformation)
+        public Task UpdateGameInformation(GameInformation gameInformation)
         {
-            if (!string.IsNullOrEmpty(gameInformation.Id))
+            if (gameInformation.Id > 0)
             {
                 //  UPDATE
-                var uniqueGame = GetGameInformationById(gameInformation.Id);
+                var uniqueGame = GetGameInformationById(gameInformation.Id).Result;
 
                 int position = _gameInformation.IndexOf(uniqueGame);
 
@@ -151,19 +160,20 @@ namespace MauiGameLibrary.Services
             else
             {
                 // INSERT
-                string id = Guid.NewGuid().ToString();
+                int id = _gameInformation.Count > 0 ? _gameInformation.Max(g => g.Id) + 1 : 1;
                 gameInformation.Id = id;
                 _gameInformation.Add(gameInformation);
             }
 
             SaveData();
+            return Task.CompletedTask;
         }
 
-        public GameInformation GetGameInformationById(string id)
+        public Task<GameInformation> GetGameInformationById(int id)
         {
             var uniqueGame = _gameInformation.Where(gameInfo => gameInfo.Id == id).FirstOrDefault();
 
-            return uniqueGame;
+            return Task.FromResult(uniqueGame ?? new GameInformation());
         }
 
         public List<GameInformation> GetGameInformationByTitle(string title)
@@ -172,19 +182,19 @@ namespace MauiGameLibrary.Services
         }
 
 
-        public List<GameType> GetGameTypes()
+        public Task<List<GameType>> GetGameTypes()
         {
-            return _gameTypes;
+            return Task.FromResult(_gameTypes);
         }
 
-        public List<AgeRestriction> GetAgeRestrictions()
+        public Task<List<AgeRestriction>> GetAgeRestrictions()
         {
-            return _ageRestrictions;
+            return Task.FromResult(_ageRestrictions);
         }
 
-        public List<Genre> GetGenres()
+        public Task<List<Genre>> GetGenres()
         {
-            return _genres;
+            return Task.FromResult(_genres);
         }
 
         private string GetStoragePath()
@@ -198,7 +208,7 @@ namespace MauiGameLibrary.Services
 
         public void SaveData()
         {
-           string jsonResult = JsonConvert.SerializeObject(_gameInformation);
+           string jsonResult = JsonSerializer.Serialize(_gameInformation);
            string path = GetStoragePath();
 
            File.WriteAllText(path, jsonResult);
@@ -212,14 +222,9 @@ namespace MauiGameLibrary.Services
             if (File.Exists(path))
             {
                 string jsonResult = File.ReadAllText(path);
-                _gameInformation = JsonConvert.DeserializeObject<List<GameInformation>>(jsonResult);
+                _gameInformation = JsonSerializer.Deserialize<List<GameInformation>>(jsonResult) ?? new List<GameInformation>();
             }        
         
-        }
-
-        Task<List<GameInformation>> IGameService.GetAllGameInformation()
-        {
-            throw new NotImplementedException();
         }
     }
 }

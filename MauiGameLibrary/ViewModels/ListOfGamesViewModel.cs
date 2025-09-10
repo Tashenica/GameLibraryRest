@@ -66,12 +66,12 @@ namespace MauiGameLibrary.ViewModels
             // Create a new empty game
             var newGame = new GameInformation
             {
-                Id = string.Empty, // Empty ID indicates a new game
+                Id = 0, // Zero ID indicates a new game
                 Title = "",
-                GameType = "",
+                GameType = null, // Will be set in the update view
                 CompanyName = "",
-                Genre = "",
-                AgeRestriction = "",
+                Genre = null, // Will be set in the update view
+                AgeRestriction = null, // Will be set in the update view
                 Multiplayer = false,
                 Description = "",
                 Image = "",
