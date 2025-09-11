@@ -19,35 +19,41 @@ namespace GameLibraryApi.Services
             return _games;
         }
 
-        public GameInformation GetGame(int id)
+        public GameInformation? GetGame(int id)
         {
             GameInformation? game = _games.Where(x => x.Id == id).FirstOrDefault();
-            return game ?? throw new InvalidOperationException($"Game with ID {id} not found.");
+            return game;
         }
 
         public GameInformation CreateGame(GameInformation gameInformation)
         {
             _games.Add(gameInformation);
 
-            return GetGame(gameInformation.Id); ;
+            return GetGame(gameInformation.Id) ?? gameInformation;
 
         }
 
         public GameInformation EditGame(GameInformation gameInformation)
         {
            
-            GameInformation gameInformationToEdit = GetGame(gameInformation.Id);
+            GameInformation? gameInformationToEdit = GetGame(gameInformation.Id);
             
-            int pos = _games.IndexOf(gameInformationToEdit);
-            _games[pos] = gameInformation;
+            if (gameInformationToEdit != null)
+            {
+                int pos = _games.IndexOf(gameInformationToEdit);
+                _games[pos] = gameInformation;
+            }
 
             return gameInformation;
         }
 
         public void DeleteGame(int id)
         {
-            GameInformation gameInformationToDelete = GetGame(id);
-            _games.Remove(gameInformationToDelete);
+            GameInformation? gameInformationToDelete = GetGame(id);
+            if (gameInformationToDelete != null)
+            {
+                _games.Remove(gameInformationToDelete);
+            }
         }
 
         public List<GameType> GetGameTypes()

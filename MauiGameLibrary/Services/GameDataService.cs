@@ -260,6 +260,17 @@ namespace MauiGameLibrary.Services
             }
             return Task.FromResult(false);
         }
+
+        public Task<GameInformation> CreateGameInformation(GameInformation gameInformation)
+        {
+            // Generate a new ID for the game
+            gameInformation.Id = _gameInformation.Count > 0 ? _gameInformation.Max(g => g.Id) + 1 : 1;
+            
+            _gameInformation.Add(gameInformation);
+            SaveData();
+            
+            return Task.FromResult(gameInformation);
+        }
     }
 }
 

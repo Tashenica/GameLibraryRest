@@ -15,17 +15,24 @@ namespace GameLibraryApi.Services
 
         public GameInformation CreateGame(GameInformation gameInformation)
         {
+            gameInformation.GameType = null;
+            gameInformation.Genre = null;
+            gameInformation.AgeRestriction = null;
+            
             _context.GameInformations.Add(gameInformation);
             _context.SaveChanges();
 
-            return gameInformation;
+            return GetGame(gameInformation.Id) ?? gameInformation;
         }
 
         public void DeleteGame(int id)
         {
-            GameInformation gameInfo = GetGame(id);
-            _context.Remove(gameInfo);
-            _context.SaveChanges();
+            GameInformation? gameInfo = GetGame(id);
+            if (gameInfo != null)
+            {
+                _context.Remove(gameInfo);
+                _context.SaveChanges();
+            }
         }
 
         public GameInformation EditGame(GameInformation gameInformation)
@@ -50,7 +57,7 @@ namespace GameLibraryApi.Services
                 return gameInfo;
             }
 
-            throw new InvalidOperationException($"Game with ID {gameInformation.Id} not found.");
+            return gameInformation;
         }
 
         public List<GameInformation> GetAllGames()
@@ -73,10 +80,10 @@ namespace GameLibraryApi.Services
             return _context.AgeRestrictions.OrderBy(ar => ar.Code).ToList();
         }
 
-        public GameInformation GetGame(int id)
+        public GameInformation? GetGame(int id)
         {
            GameInformation? game = _context.GameInformations.Include(g => g.GameType).Include(g => g.Genre).Include(g => g.AgeRestriction).Where(x => x.Id == id).FirstOrDefault();
-           return game ?? throw new InvalidOperationException($"Game with ID {id} not found.");
+           return game;
         }
     }
 }

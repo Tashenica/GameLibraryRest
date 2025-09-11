@@ -8,7 +8,7 @@ namespace GameLibraryApi.Interfaces
         void DeleteGame(int id);
         GameInformation EditGame(GameInformation gameInformation);
         List<GameInformation> GetAllGames();
-        GameInformation GetGame(int id);
+        GameInformation? GetGame(int id);
         List<GameType> GetGameTypes();
         List<Genre> GetGenres();
         List<AgeRestriction> GetAgeRestrictions();

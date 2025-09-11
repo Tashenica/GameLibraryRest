@@ -89,7 +89,7 @@ namespace GameLibraryApi.Controllers
         {
             try
             {
-                GameInformation game = _gameService.GetGame(id);
+                GameInformation? game = _gameService.GetGame(id);
 
                 if (game == null)
                     return NotFound();
@@ -115,7 +115,7 @@ namespace GameLibraryApi.Controllers
 
             try
             {
-                GameInformation gameInfo = _gameService.GetGame(gameInformation.Id);
+                GameInformation? gameInfo = _gameService.GetGame(gameInformation.Id);
 
                 if (gameInfo == null)
                 {
@@ -145,7 +145,7 @@ namespace GameLibraryApi.Controllers
 
             try
             {
-                GameInformation gameInfo = _gameService.GetGame(gameInformation.Id);
+                GameInformation? gameInfo = _gameService.GetGame(gameInformation.Id);
 
                 if (gameInfo == null)
                 {
@@ -172,7 +172,7 @@ namespace GameLibraryApi.Controllers
         {
             try
             {
-                GameInformation gameInfo = _gameService.GetGame(id);
+                GameInformation? gameInfo = _gameService.GetGame(id);
 
                 if (gameInfo == null)
                 {
@@ -197,7 +197,7 @@ namespace GameLibraryApi.Controllers
         {
             try
             {
-                GameInformation game = _gameService.GetGame(id);
+                GameInformation? game = _gameService.GetGame(id);
 
                 if (game == null)
                     return NotFound("Game not found");
@@ -205,7 +205,7 @@ namespace GameLibraryApi.Controllers
                 if (game.ImageData == null || game.ImageData.Length == 0)
                     return NotFound("No image found for this game");
 
-                return File(game.ImageData, game.ImageContentType, game.ImageFileName);
+                return File(game.ImageData, game.ImageContentType ?? "application/octet-stream", game.ImageFileName);
             }
             catch (Exception ex)
             {
@@ -219,7 +219,7 @@ namespace GameLibraryApi.Controllers
         {
             try
             {
-                GameInformation game = _gameService.GetGame(id);
+                GameInformation? game = _gameService.GetGame(id);
 
                 if (game == null)
                     return NotFound("Game not found");
@@ -258,7 +258,7 @@ namespace GameLibraryApi.Controllers
         {
             try
             {
-                GameInformation game = _gameService.GetGame(id);
+                GameInformation? game = _gameService.GetGame(id);
 
                 if (game == null)
                     return NotFound("Game not found");

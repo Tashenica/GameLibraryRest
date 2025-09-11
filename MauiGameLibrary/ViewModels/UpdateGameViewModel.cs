@@ -136,15 +136,26 @@ namespace MauiGameLibrary.ViewModels
             {
                 if (SelectedGame != null && IsValidGame())
                 {
-                    await _gameDataServices.UpdateGameInformation(SelectedGame);
+                    GameInformation savedGame;
                     
-                    // If this is a new game and has image data, upload the image
-                    if (SelectedGame.Id > 0 && SelectedGame.ImageData != null && 
+                    if (SelectedGame.Id == 0)
+                    {
+                        savedGame = await _gameDataServices.CreateGameInformation(SelectedGame);
+                        SelectedGame.Id = savedGame.Id; // Update with the new ID from server
+                    }
+                    else
+                    {
+                        await _gameDataServices.UpdateGameInformation(SelectedGame);
+                        savedGame = SelectedGame;
+                    }
+                    
+                    // If the game has image data, upload the image
+                    if (savedGame.Id > 0 && SelectedGame.ImageData != null && 
                         !string.IsNullOrEmpty(SelectedGame.ImageFileName) && 
                         !string.IsNullOrEmpty(SelectedGame.ImageContentType))
                     {
                         await _gameDataServices.UploadGameImage(
-                            SelectedGame.Id,
+                            savedGame.Id,
                             SelectedGame.ImageData,
                             SelectedGame.ImageFileName,
                             SelectedGame.ImageContentType);
@@ -156,7 +167,6 @@ namespace MauiGameLibrary.ViewModels
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("Cannot save: Required fields are missing");
-                    // In a production app, you might want to show a user-friendly message
                 }
             }
             catch (Exception ex)

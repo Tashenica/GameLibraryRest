@@ -184,6 +184,36 @@ namespace MauiGameLibrary.Services
             return new List<Genre>();
         }
 
+        public async Task<GameInformation> CreateGameInformation(GameInformation gameInformation)
+        {
+            Uri uri = new Uri(_applicationSettings.ServiceUrl);
+
+            try
+            {
+                string jsonContent = JsonSerializer.Serialize(gameInformation, _jsonSerializerOptions);
+                StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _apiClient.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    GameInformation? createdGame = JsonSerializer.Deserialize<GameInformation>(responseContent, _jsonSerializerOptions);
+                    return createdGame ?? new GameInformation();
+                }
+                else
+                {
+                    Debug.WriteLine($"Create failed with status: {response.StatusCode}");
+                    throw new GameApiFailedException($"Failed to create game. Status: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                throw new GameApiFailedException("Failed to create game data.");
+            }
+        }
+
         public async Task UpdateGameInformation(GameInformation gameInformation)
         {
             Uri uri = new Uri($"{_applicationSettings.ServiceUrl}/{gameInformation.Id}");
