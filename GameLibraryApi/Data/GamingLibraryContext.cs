@@ -18,21 +18,18 @@ namespace GameLibraryApi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure the relationship between GameInformation and GameType
             modelBuilder.Entity<GameInformation>()
                 .HasOne(g => g.GameType)
                 .WithMany(gt => gt.GameInformations)
                 .HasForeignKey(g => g.GameTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure the relationship between GameInformation and Genre
             modelBuilder.Entity<GameInformation>()
                 .HasOne(g => g.Genre)
                 .WithMany(gr => gr.GameInformations)
                 .HasForeignKey(g => g.GenreId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure the relationship between GameInformation and AgeRestriction
             modelBuilder.Entity<GameInformation>()
                 .HasOne(g => g.AgeRestriction)
                 .WithMany(ar => ar.GameInformations)
@@ -42,9 +39,38 @@ namespace GameLibraryApi.Data
             base.OnModelCreating(modelBuilder);
         }
 
+        private byte[] LoadImageData(string fileName)
+        {
+            try
+            {
+                var imagesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", fileName);
+                
+                if (File.Exists(imagesPath))
+                {
+                    return File.ReadAllBytes(imagesPath);
+                }
+                else
+                {
+                    var projectPath = Path.Combine(Directory.GetCurrentDirectory(), "Images", fileName);
+                    if (File.Exists(projectPath))
+                    {
+                        return File.ReadAllBytes(projectPath);
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Image file {fileName} not found, creating placeholder");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading image {fileName}: {ex.Message}");
+                return null;
+            }
+        }
+
+
         public void SeedData()
         {
-            // Seed GameTypes first (let EF auto-generate IDs)
             if (!GameTypes.Any())
             {
                 var gameTypes = new List<GameType>
@@ -60,7 +86,6 @@ namespace GameLibraryApi.Data
                 SaveChanges();
             }
 
-            // Seed Genres (let EF auto-generate IDs)
             if (!Genres.Any())
             {
                 var genres = new List<Genre>
@@ -79,7 +104,6 @@ namespace GameLibraryApi.Data
                 SaveChanges();
             }
 
-            // Seed AgeRestrictions (let EF auto-generate IDs)
             if (!AgeRestrictions.Any())
             {
                 var ageRestrictions = new List<AgeRestriction>
@@ -96,10 +120,8 @@ namespace GameLibraryApi.Data
                 SaveChanges();
             }
 
-            // Seed GameInformations with references to the created GameTypes, Genres, and AgeRestrictions
             if (!GameInformations.Any())
             {
-                // Get the first few game types, genres, and age restrictions that were just created
                 var wiiGameType = GameTypes.First(gt => gt.Name == "Nintendo Wii");
                 var switchGameType = GameTypes.First(gt => gt.Name == "Nintendo Switch");
                 var adventureGenre = Genres.First(g => g.Name == "Adventure");
@@ -119,6 +141,9 @@ namespace GameLibraryApi.Data
                         Multiplayer = false,
                         Description = "An open-world action-adventure game set in the kingdom of Hyrule.",
                         Image = "zelda.png",
+                        ImageData = LoadImageData("zelda.png"),
+                        ImageFileName = "zelda.png",
+                        ImageContentType = "image/png",
                         YearPublished = new DateTime(2017, 3, 3)
                     },
                     new GameInformation
@@ -131,6 +156,9 @@ namespace GameLibraryApi.Data
                         Multiplayer = false,
                         Description = "A 3D platformer where Mario travels across various kingdoms to rescue Princess Peach.",
                         Image = "mario.png",
+                        ImageData = LoadImageData("mario.png"),
+                        ImageFileName = "mario.png",
+                        ImageContentType = "image/png",
                         YearPublished = new DateTime(2017, 10, 27)
                     }
                 };

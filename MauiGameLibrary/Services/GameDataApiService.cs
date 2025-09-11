@@ -208,6 +208,97 @@ namespace MauiGameLibrary.Services
             }
         }
 
+        public async Task<byte[]?> GetGameImage(int gameId)
+        {
+            Uri uri = new Uri($"{_applicationSettings.ServiceUrl}/{gameId}/image");
+
+            try
+            {
+                HttpResponseMessage response = await _apiClient.GetAsync(uri);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // No image found for this game
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                throw new GameApiFailedException($"Failed to fetch image for game ID {gameId}.");
+            }
+
+            return null;
+        }
+
+        public async Task<bool> UploadGameImage(int gameId, byte[] imageData, string fileName, string contentType)
+        {
+            Uri uri = new Uri($"{_applicationSettings.ServiceUrl}/{gameId}/image");
+
+            try
+            {
+                using var form = new MultipartFormDataContent();
+                using var imageContent = new ByteArrayContent(imageData);
+                imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                form.Add(imageContent, "image", fileName);
+
+                HttpResponseMessage response = await _apiClient.PostAsync(uri, form);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine($"Image upload failed with status: {response.StatusCode}");
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    Debug.WriteLine($"Error content: {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                throw new GameApiFailedException($"Failed to upload image for game ID {gameId}.");
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeleteGameImage(int gameId)
+        {
+            Uri uri = new Uri($"{_applicationSettings.ServiceUrl}/{gameId}/image");
+
+            try
+            {
+                HttpResponseMessage response = await _apiClient.DeleteAsync(uri);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // No image found to delete
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine($"Image deletion failed with status: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+                throw new GameApiFailedException($"Failed to delete image for game ID {gameId}.");
+            }
+
+            return false;
+        }
+
 
     }
 }

@@ -17,5 +17,8 @@ namespace MauiGameLibrary.Interfaces
        /* void LoadData();
         void SaveData();*/
         Task UpdateGameInformation(GameInformation gameInformation);
+        Task<byte[]?> GetGameImage(int gameId);
+        Task<bool> UploadGameImage(int gameId, byte[] imageData, string fileName, string contentType);
+        Task<bool> DeleteGameImage(int gameId);
     }
 }

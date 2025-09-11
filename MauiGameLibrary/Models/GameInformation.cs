@@ -37,6 +37,11 @@ namespace MauiGameLibrary.Models
 
         public string Image { get; set; } = string.Empty;
 
+        // Image storage properties
+        public byte[]? ImageData { get; set; }
+        public string? ImageFileName { get; set; }
+        public string? ImageContentType { get; set; }
+
         public DateTime YearPublished { get; set; }
     }
 }

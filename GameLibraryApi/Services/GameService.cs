@@ -106,6 +106,9 @@ namespace GameLibraryApi.Services
                 Multiplayer = false,
                 Description = "An open-world action-adventure game set in the kingdom of Hyrule.",
                 Image = "zelda.png",
+                ImageData = null,
+                ImageFileName = null,
+                ImageContentType = null,
                 YearPublished = new DateTime(2017, 3, 3)
             });
             _games.Add(new GameInformation
@@ -119,6 +122,9 @@ namespace GameLibraryApi.Services
                 Multiplayer = false,
                 Description = "A 3D platformer where Mario travels across various kingdoms to rescue Princess Peach.",
                 Image = "mario.png",
+                ImageData = null,
+                ImageFileName = null,
+                ImageContentType = null,
                 YearPublished = new DateTime(2017, 10, 27)
             });
         }

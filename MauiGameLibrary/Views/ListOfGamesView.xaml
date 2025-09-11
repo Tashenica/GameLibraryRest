@@ -5,6 +5,7 @@
              xmlns:viewmodels="clr-namespace:MauiGameLibrary.ViewModels"
              xmlns:views="clr-namespace:MauiGameLibrary.Views"
              xmlns:models="clr-namespace:MauiGameLibrary.Models"
+             xmlns:converters="clr-namespace:MauiGameLibrary.Converters"
              Title="Game Library" x:DataType="viewmodels:ListOfGamesViewModel">
 
     <ContentPage.ToolbarItems>
@@ -26,21 +27,26 @@
     </Shell.TitleView> -->
 
     <ContentPage.Resources>
-        <Style TargetType="Border">
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal" />
-                        <VisualState x:Name="Selected">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor"
-                                        Value="LightSkyBlue" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <converters:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmptyConverter" />
+            <converters:IsNullOrEmptyConverter x:Key="IsNullOrEmptyConverter" />
+            
+            <Style TargetType="Border">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="LightSkyBlue" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <CollectionView ItemsSource="{Binding Games}" SelectionMode="Single" SelectedItem="{Binding SelectedGame}" SelectionChangedCommand="{Binding GameSelectedCommand}">
@@ -64,7 +70,15 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                  
-                    <Image Grid.RowSpan="2" Source="{Binding Image}" Aspect="AspectFill" HeightRequest="80" WidthRequest="80" />
+                    <Border Grid.RowSpan="2" BackgroundColor="LightGray" WidthRequest="80" HeightRequest="80">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Grid>
+                            <Image Source="{Binding Image}" Aspect="AspectFill" IsVisible="{Binding Image, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                            <Label Text="📷" FontSize="30" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray" IsVisible="{Binding Image, Converter={StaticResource IsNullOrEmptyConverter}}" />
+                        </Grid>
+                    </Border>
                     <Label Grid.ColumnSpan="2" FontAttributes="Bold" Margin="5" Text="{Binding Title}" Grid.Column="1"/>
                     <Label FontAttributes="Italic" TextColor="Gray" Margin="5" Text="{Binding GameType.Name}" Grid.Column="1" Grid.Row="1"/>
                     <Label FontAttributes="Bold" TextColor="Red" HorizontalOptions="End" Grid.Column="2" Grid.Row="1" Margin="5" Text="{Binding AgeRestriction.Code}"/>

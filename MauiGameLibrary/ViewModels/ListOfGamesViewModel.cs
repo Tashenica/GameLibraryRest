@@ -86,9 +86,76 @@ namespace MauiGameLibrary.ViewModels
             await AppShell.Current.GoToAsync("updategameroute", param);
         }
 
+        public async Task RefreshGamesAsync()
+        {
+            var games = await _gameDataService.GetAllGameInformation();
+            
+            // Load images for each game in parallel for better performance
+            var imageLoadTasks = games.Select(LoadGameImage).ToArray();
+            await Task.WhenAll(imageLoadTasks);
+            
+            Games = new ObservableCollection<GameInformation>(games);
+        }
+
         public async void RefreshGames()
         {
-            Games = new ObservableCollection<GameInformation>(await _gameDataService.GetAllGameInformation());
+            await RefreshGamesAsync();
+        }
+
+        private async Task LoadGameImage(GameInformation game)
+        {
+            try
+            {
+                if (game.Id > 0)
+                {
+                    var imageData = await _gameDataService.GetGameImage(game.Id);
+                    if (imageData != null && imageData.Length > 0)
+                    {
+                        game.ImageData = imageData;
+                        
+                        // Create a temporary local file for display
+                        var fileName = game.ImageFileName ?? $"game_image_{game.Id}.jpg";
+                        var localPath = await SaveImageDataLocally(imageData, fileName);
+                        if (!string.IsNullOrEmpty(localPath))
+                        {
+                            game.Image = localPath;
+                        }
+                    }
+                    else
+                    {
+                        // No image in database, use default or empty
+                        game.Image = "";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading image for game {game.Id}: {ex.Message}");
+                game.Image = ""; // Fallback to no image
+            }
+        }
+
+        private async Task<string> SaveImageDataLocally(byte[] imageData, string fileName)
+        {
+            try
+            {
+                var localAppData = FileSystem.AppDataDirectory;
+                var imagesFolder = Path.Combine(localAppData, "Images");
+                
+                if (!Directory.Exists(imagesFolder))
+                    Directory.CreateDirectory(imagesFolder);
+                
+                var localFilePath = Path.Combine(imagesFolder, fileName);
+                
+                await File.WriteAllBytesAsync(localFilePath, imageData);
+                
+                return localFilePath;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving image data locally: {ex.Message}");
+                return string.Empty;
+            }
         }
 
         public override void OnAppearing()

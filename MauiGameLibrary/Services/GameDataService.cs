@@ -226,6 +226,40 @@ namespace MauiGameLibrary.Services
             }        
         
         }
+
+        public Task<byte[]?> GetGameImage(int gameId)
+        {
+            var game = _gameInformation.FirstOrDefault(g => g.Id == gameId);
+            return Task.FromResult(game?.ImageData);
+        }
+
+        public Task<bool> UploadGameImage(int gameId, byte[] imageData, string fileName, string contentType)
+        {
+            var game = _gameInformation.FirstOrDefault(g => g.Id == gameId);
+            if (game != null)
+            {
+                game.ImageData = imageData;
+                game.ImageFileName = fileName;
+                game.ImageContentType = contentType;
+                SaveData();
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
+        }
+
+        public Task<bool> DeleteGameImage(int gameId)
+        {
+            var game = _gameInformation.FirstOrDefault(g => g.Id == gameId);
+            if (game != null)
+            {
+                game.ImageData = null;
+                game.ImageFileName = null;
+                game.ImageContentType = null;
+                SaveData();
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
+        }
     }
 }
 

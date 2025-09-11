@@ -41,6 +41,9 @@ namespace GameLibraryApi.Services
                 gameInfo.Multiplayer = gameInformation.Multiplayer;
                 gameInfo.Description = gameInformation.Description;
                 gameInfo.Image = gameInformation.Image;
+                gameInfo.ImageData = gameInformation.ImageData;
+                gameInfo.ImageFileName = gameInformation.ImageFileName;
+                gameInfo.ImageContentType = gameInformation.ImageContentType;
                 gameInfo.YearPublished = gameInformation.YearPublished;
 
                 _context.SaveChanges();

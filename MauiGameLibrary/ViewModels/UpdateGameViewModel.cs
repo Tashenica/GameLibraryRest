@@ -138,6 +138,18 @@ namespace MauiGameLibrary.ViewModels
                 {
                     await _gameDataServices.UpdateGameInformation(SelectedGame);
                     
+                    // If this is a new game and has image data, upload the image
+                    if (SelectedGame.Id > 0 && SelectedGame.ImageData != null && 
+                        !string.IsNullOrEmpty(SelectedGame.ImageFileName) && 
+                        !string.IsNullOrEmpty(SelectedGame.ImageContentType))
+                    {
+                        await _gameDataServices.UploadGameImage(
+                            SelectedGame.Id,
+                            SelectedGame.ImageData,
+                            SelectedGame.ImageFileName,
+                            SelectedGame.ImageContentType);
+                    }
+                    
                     // Navigate back to the previous page
                     await Shell.Current.GoToAsync("..");
                 }
@@ -183,11 +195,59 @@ namespace MauiGameLibrary.ViewModels
 
                 if (result != null)
                 {
-                    var localImagePath = await SaveImageLocally(result);
+                    // Read the image data
+                    using var stream = await result.OpenReadAsync();
+                    using var memoryStream = new MemoryStream();
+                    await stream.CopyToAsync(memoryStream);
                     
-                    if (!string.IsNullOrEmpty(localImagePath))
+                    var imageData = memoryStream.ToArray();
+                    var fileName = result.FileName;
+                    var contentType = result.ContentType ?? "image/jpeg";
+
+                    // Upload the image to the server if the game already exists
+                    if (SelectedGame.Id > 0)
                     {
-                        SelectedGame.Image = localImagePath;
+                        var uploadSuccess = await _gameDataServices.UploadGameImage(
+                            SelectedGame.Id, 
+                            imageData, 
+                            fileName, 
+                            contentType);
+
+                        if (uploadSuccess)
+                        {
+                            // Update the game object with image data
+                            SelectedGame.ImageData = imageData;
+                            SelectedGame.ImageFileName = fileName;
+                            SelectedGame.ImageContentType = contentType;
+                            
+                            // For display purposes, create a temporary local image
+                            var localImagePath = await SaveImageLocally(result);
+                            if (!string.IsNullOrEmpty(localImagePath))
+                            {
+                                SelectedGame.Image = localImagePath;
+                            }
+                            
+                            OnPropertyChanged(nameof(SelectedGame));
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("Failed to upload image to server");
+                        }
+                    }
+                    else
+                    {
+                        // Store image data for new games (will be uploaded on save)
+                        SelectedGame.ImageData = imageData;
+                        SelectedGame.ImageFileName = fileName;
+                        SelectedGame.ImageContentType = contentType;
+                        
+                        // For display purposes, create a temporary local image
+                        var localImagePath = await SaveImageLocally(result);
+                        if (!string.IsNullOrEmpty(localImagePath))
+                        {
+                            SelectedGame.Image = localImagePath;
+                        }
+                        
                         OnPropertyChanged(nameof(SelectedGame));
                     }
                 }
@@ -244,10 +304,66 @@ namespace MauiGameLibrary.ViewModels
                 SelectedGame.GenreId = firstGenre.Id;
                 SelectedGame.Genre = firstGenre;
             }
+            else
+            {
+                // Load image for existing game
+                await LoadGameImage();
+            }
 
             UpdateSelectedGameType();
             UpdateSelectedAgeRestriction();
             UpdateSelectedGenre();
+        }
+
+        private async Task LoadGameImage()
+        {
+            try
+            {
+                if (SelectedGame.Id > 0)
+                {
+                    var imageData = await _gameDataServices.GetGameImage(SelectedGame.Id);
+                    if (imageData != null && imageData.Length > 0)
+                    {
+                        SelectedGame.ImageData = imageData;
+                        
+                        // Create a temporary local file for display
+                        var fileName = SelectedGame.ImageFileName ?? $"game_image_{SelectedGame.Id}.jpg";
+                        var localPath = await SaveImageDataLocally(imageData, fileName);
+                        if (!string.IsNullOrEmpty(localPath))
+                        {
+                            SelectedGame.Image = localPath;
+                            OnPropertyChanged(nameof(SelectedGame));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading game image: {ex.Message}");
+            }
+        }
+
+        private async Task<string> SaveImageDataLocally(byte[] imageData, string fileName)
+        {
+            try
+            {
+                var localAppData = FileSystem.AppDataDirectory;
+                var imagesFolder = Path.Combine(localAppData, "Images");
+                
+                if (!Directory.Exists(imagesFolder))
+                    Directory.CreateDirectory(imagesFolder);
+                
+                var localFilePath = Path.Combine(imagesFolder, fileName);
+                
+                await File.WriteAllBytesAsync(localFilePath, imageData);
+                
+                return localFilePath;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving image data locally: {ex.Message}");
+                return string.Empty;
+            }
         }
 
         private void UpdateSelectedGameType()

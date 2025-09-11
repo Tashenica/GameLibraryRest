@@ -36,6 +36,12 @@ namespace GameLibraryApi.Models
 
         public string Description { get; set; } = string.Empty;
 
+        // Image storage - store actual image data
+        public byte[]? ImageData { get; set; }
+        public string? ImageFileName { get; set; }
+        public string? ImageContentType { get; set; }
+        
+        // Keep the Image property for backwards compatibility (can be used for display names)
         public string Image { get; set; } = string.Empty;
 
         public DateTime YearPublished { get; set; }

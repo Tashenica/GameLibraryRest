@@ -31,7 +31,7 @@ namespace GameLibraryApi.Controllers
 
                 return Ok(games);
             }
-            catch(Exception _)
+            catch(Exception ex)
             {
                 return BadRequest();
             }
@@ -47,7 +47,7 @@ namespace GameLibraryApi.Controllers
                 List<GameType> gameTypes = _gameService.GetGameTypes();
                 return Ok(gameTypes);
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -62,7 +62,7 @@ namespace GameLibraryApi.Controllers
                 List<Genre> genres = _gameService.GetGenres();
                 return Ok(genres);
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -77,7 +77,7 @@ namespace GameLibraryApi.Controllers
                 List<AgeRestriction> ageRestrictions = _gameService.GetAgeRestrictions();
                 return Ok(ageRestrictions);
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -96,7 +96,7 @@ namespace GameLibraryApi.Controllers
 
                 return Ok(game);
             }
-            catch(Exception _)
+            catch(Exception ex)
             {
                 return BadRequest();
             }
@@ -127,7 +127,7 @@ namespace GameLibraryApi.Controllers
 
                 }
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 return BadRequest();
 
@@ -157,7 +157,7 @@ namespace GameLibraryApi.Controllers
 
                 }
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 return BadRequest();
 
@@ -184,10 +184,101 @@ namespace GameLibraryApi.Controllers
                     return Ok();
                 }
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 return BadRequest();
 
+            }
+        }
+
+        // GET api/<GameStuffController>/5/image
+        [HttpGet("{id}/image")]
+        public IActionResult GetGameImage(int id)
+        {
+            try
+            {
+                GameInformation game = _gameService.GetGame(id);
+
+                if (game == null)
+                    return NotFound("Game not found");
+
+                if (game.ImageData == null || game.ImageData.Length == 0)
+                    return NotFound("No image found for this game");
+
+                return File(game.ImageData, game.ImageContentType, game.ImageFileName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
+        // POST api/<GameStuffController>/5/image
+        [HttpPost("{id}/image")]
+        public async Task<IActionResult> UploadGameImage(int id, IFormFile image)
+        {
+            try
+            {
+                GameInformation game = _gameService.GetGame(id);
+
+                if (game == null)
+                    return NotFound("Game not found");
+
+                if (image == null || image.Length == 0)
+                    return BadRequest("No image provided");
+
+                var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/bmp" };
+                if (!allowedTypes.Contains(image.ContentType.ToLower()))
+                    return BadRequest("Invalid image type. Allowed types: JPEG, PNG, GIF, BMP");
+
+                if (image.Length > 5 * 1024 * 1024)
+                    return BadRequest("Image size cannot exceed 5MB");
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync(memoryStream);
+                    game.ImageData = memoryStream.ToArray();
+                    game.ImageFileName = image.FileName;
+                    game.ImageContentType = image.ContentType;
+                }
+
+                _gameService.EditGame(game);
+
+                return Ok(new { message = "Image uploaded successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
+        // DELETE api/<GameStuffController>/5/image
+        [HttpDelete("{id}/image")]
+        public IActionResult DeleteGameImage(int id)
+        {
+            try
+            {
+                GameInformation game = _gameService.GetGame(id);
+
+                if (game == null)
+                    return NotFound("Game not found");
+
+                if (game.ImageData == null || game.ImageData.Length == 0)
+                    return NotFound("No image found for this game");
+
+                // Clear image data
+                game.ImageData = null;
+                game.ImageFileName = null;
+                game.ImageContentType = null;
+
+                // Update the game
+                _gameService.EditGame(game);
+
+                return Ok(new { message = "Image deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
             }
         }
     }
