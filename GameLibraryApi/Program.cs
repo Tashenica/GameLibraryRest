@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GamingLibraryContext>(options =>
-    options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=GameLibraryDB;Trusted_Connection=true;MultipleActiveResultSets=true"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 
