@@ -33,6 +33,7 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<GamingLibraryContext>();
     context.Database.EnsureCreated(); // Create the database
+    context.Database.Migrate();  //Apply any pending migrations
     context.SeedData(); // Seed with sample data
 }
 
