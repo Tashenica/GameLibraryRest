@@ -229,3 +229,7 @@ Artifacts/
 **/packages/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
+
+# Azure Developer CLI
+.azure/
+.env
